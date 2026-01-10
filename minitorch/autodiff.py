@@ -69,8 +69,20 @@ def topological_sort(variable: Variable) -> Iterable[Variable]:
     Returns:
         Non-constant Variables in topological order starting from the right.
     """
-    # TODO: Implement for Task 1.4.
-    raise NotImplementedError("Need to implement for Task 1.4")
+    # TODO: Implement for Task 1.4.    
+    visited = set()
+    result = []
+    
+    def dfs(node):
+        if node.unique_id not in visited:
+            visited.add(node.unique_id)
+            for child in node.parents:
+                dfs(child)
+            result.append(node)
+                
+    dfs(variable)
+                
+    return result
 
 
 def backpropagate(variable: Variable, deriv: Any) -> None:
@@ -85,8 +97,28 @@ def backpropagate(variable: Variable, deriv: Any) -> None:
     No return. Should write to its results to the derivative values of each leaf through `accumulate_derivative`.
     """
     # TODO: Implement for Task 1.4.
-    raise NotImplementedError("Need to implement for Task 1.4")
-
+    
+    from collections import defaultdict
+    
+    deriv_dict = defaultdict(int)
+    deriv_dict[variable.unique_id] = deriv
+    
+    for var in reversed(topological_sort(variable)):
+        print(f'---遍历------------------{var.name}')
+        
+        deriv = deriv_dict[var.unique_id]
+        
+        # 叶子节点，则不需要再反向传播
+        if var.is_leaf():
+            var.accumulate_derivative(deriv)
+            # print(f'-----acc {var.name} {deriv}')
+            continue
+        # 非叶子节点，计算并更新input nodes的所有梯度
+        for input_var, grad in var.chain_rule(deriv):
+            deriv_dict[input_var.unique_id] += grad
+            # print(f'-----back {var.name}: {input_var.name} {grad}')
+            
+    # print('---' * 10, deriv_dict)
 
 @dataclass
 class Context:
