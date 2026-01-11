@@ -103,9 +103,7 @@ def backpropagate(variable: Variable, deriv: Any) -> None:
     deriv_dict = defaultdict(int)
     deriv_dict[variable.unique_id] = deriv
     
-    for var in reversed(topological_sort(variable)):
-        print(f'---遍历------------------{var.name}')
-        
+    for var in reversed(topological_sort(variable)):        
         deriv = deriv_dict[var.unique_id]
         
         # 叶子节点，则不需要再反向传播

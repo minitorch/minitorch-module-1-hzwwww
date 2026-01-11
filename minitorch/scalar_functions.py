@@ -52,6 +52,9 @@ class ScalarFunction:
             if isinstance(v, minitorch.scalar.Scalar):
                 scalars.append(v)
                 raw_vals.append(v.data)
+            elif isinstance(v, minitorch.module.Parameter):
+                scalars.append(v.value)
+                raw_vals.append(v.value.data)
             else:
                 scalars.append(minitorch.scalar.Scalar(v))
                 raw_vals.append(v)
